@@ -64,7 +64,7 @@ abstract class HTMLSearchOutput extends AbstractSearchOutput
     {
         /** @var array $CFG_GLPI */
         global $CFG_GLPI;
-
+     
         $search_error = false;
         if (!isset($data['data']) || !isset($data['data']['totalcount'])) {
             $search_error = true;
@@ -74,7 +74,7 @@ abstract class HTMLSearchOutput extends AbstractSearchOutput
         $itemtype   = $data['itemtype'];
         $item       = $data['item'];
         $is_deleted = $search['is_deleted'];
-
+     
         foreach ($search['criteria'] as $key => $criteria) {
             if (isset($criteria['virtual']) && $criteria['virtual']) {
                 unset($search['criteria'][$key]);
@@ -167,13 +167,14 @@ abstract class HTMLSearchOutput extends AbstractSearchOutput
             $used_soptions_names = [];
             foreach ($used_fields as $sopt_id) {
                 $used_soptions_names[] = $soptions[$sopt_id]['name'];
+               
             }
-
+           
             $active_sort_name = sprintf(__("Sorted by %s"), implode(', ', $used_soptions_names));
 
             $active_sort = true;
         }
-
+      
         $rand = mt_rand();
         TemplateRenderer::getInstance()->display('components/search/display_data.html.twig', [
             'search_error'         => $search_error,
@@ -217,21 +218,10 @@ abstract class HTMLSearchOutput extends AbstractSearchOutput
             'active_sort_name'    => $active_sort_name,
             'active_sort'         => $active_sort,
         ] + ($params['extra_twig_params'] ?? []));
-
+       
         // Add items in item list
-        if (isset($data['data']['rows'])) {
-            foreach ($data['data']['rows'] as $row) {
-                if ($itemtype !== \AllAssets::class) {
-                    \Session::addToNavigateListItems($itemtype, $row["id"]);
-                } else {
-                    // In case of a global search, reset and empty navigation list to ensure navigation in
-                    // item header context is not shown. Indeed, this list does not support navigation through
-                    // multiple itemtypes, so it should not be displayed in global search context.
-                    \Session::initNavigateListItems($row['TYPE'] ?? $data['itemtype']);
-                }
-            }
-        }
-
+    
+      
         // Clean previous selection
         $_SESSION['glpimassiveactionselected'] = [];
     }
@@ -290,10 +280,12 @@ abstract class HTMLSearchOutput extends AbstractSearchOutput
 
     public static function showItem($value, &$num, $row, $extraparam = ''): string
     {
+        
         /** @var array $CFG_GLPI */
         global $CFG_GLPI;
-        $out = "<td $extraparam valign='top'>";
-
+    
+     
+      
         if (!preg_match('/' . \Search::LBHR . '/', $value)) {
             $values = preg_split('/' . \Search::LBBR . '/i', $value);
             $line_delimiter = '<br>';
@@ -301,7 +293,7 @@ abstract class HTMLSearchOutput extends AbstractSearchOutput
             $values = preg_split('/' . \Search::LBHR . '/i', $value);
             $line_delimiter = '<hr>';
         }
-
+       
         if (
             count($values) > 1
             && \Toolbox::strlen($value) > $CFG_GLPI['cut']
@@ -328,7 +320,9 @@ abstract class HTMLSearchOutput extends AbstractSearchOutput
             $value = preg_replace('/' . \Search::LBHR . '/', '<hr>', $value);
             $out .= $value;
         }
-        $out .= "</td>\n";
+     
+      
+      
         return $out;
     }
 
@@ -342,3 +336,5 @@ abstract class HTMLSearchOutput extends AbstractSearchOutput
         return "<div class='center b'>$message</div>\n";
     }
 }
+
+
